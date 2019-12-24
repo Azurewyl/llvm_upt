@@ -67,6 +67,7 @@ public:
     amdgcn,         // AMDGCN: AMD GCN GPUs
     riscv32,        // RISC-V (32-bit): riscv32
     riscv64,        // RISC-V (64-bit): riscv64
+    upt,            // BUPT self-def 32-bit
     sparc,          // Sparc: sparc
     sparcv9,        // Sparcv9: Sparcv9
     sparcel,        // Sparc: (endianness = little). NB: 'Sparcle' is a CPU variant

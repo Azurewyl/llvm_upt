@@ -108,6 +108,13 @@ StringRef llvm::object::getELFRelocationTypeName(uint32_t Machine,
       break;
     }
     break;
+  case ELF::EM_UPT:
+    switch (Type) {
+#include "llvm/BinaryFormat/ELFRelocs/UPT.def"
+    default:
+      break;
+    }
+    break;
   case ELF::EM_S390:
     switch (Type) {
 #include "llvm/BinaryFormat/ELFRelocs/SystemZ.def"
@@ -181,6 +188,8 @@ uint32_t llvm::object::getELFRelativeRelocationType(uint32_t Machine) {
     return ELF::R_PPC64_RELATIVE;
   case ELF::EM_RISCV:
     return ELF::R_RISCV_RELATIVE;
+  case ELF::EM_UPT:
+    break;   //fixme
   case ELF::EM_S390:
     return ELF::R_390_RELATIVE;
   case ELF::EM_SPARC:

@@ -86,6 +86,7 @@ public:
 
   SubtargetFeatures getRISCVFeatures() const;
 
+//  todo add UPTgetFeatures()
   void setARMSubArch(Triple &TheTriple) const override;
 
   virtual uint16_t getEType() const = 0;
@@ -1078,6 +1079,8 @@ StringRef ELFObjectFile<ELFT>::getFileFormatName() const {
       return "ELF32-ppc";
     case ELF::EM_RISCV:
       return "ELF32-riscv";
+    case ELF::EM_UPT:
+      return "ELF32-upt";
     case ELF::EM_SPARC:
     case ELF::EM_SPARC32PLUS:
       return "ELF32-sparc";
@@ -1150,6 +1153,9 @@ template <class ELFT> Triple::ArchType ELFObjectFile<ELFT>::getArch() const {
     return Triple::ppc;
   case ELF::EM_PPC64:
     return IsLittleEndian ? Triple::ppc64le : Triple::ppc64;
+
+  case ELF::EM_UPT:
+    return Triple::upt;
   case ELF::EM_RISCV:
     switch (EF.getHeader()->e_ident[ELF::EI_CLASS]) {
     case ELF::ELFCLASS32:

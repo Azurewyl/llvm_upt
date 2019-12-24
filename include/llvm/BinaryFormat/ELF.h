@@ -309,6 +309,7 @@ enum {
   EM_CSR_KALIMBA = 219,   // CSR Kalimba architecture family
   EM_AMDGPU = 224,        // AMD GPU architecture
   EM_RISCV = 243,         // RISC-V
+  EM_UPT = 245,           // BUPT self-define processor
   EM_LANAI = 244,         // Lanai 32-bit processor
   EM_BPF = 247,           // Linux kernel bpf virtual machine
 };
@@ -632,6 +633,10 @@ enum {
 #include "ELFRelocs/RISCV.def"
 };
 
+// ELF Relocation types for RISC-V
+enum {
+#include "ELFRelocs/UPT.def"
+};
 // ELF Relocation types for S390/zSeries
 enum {
 #include "ELFRelocs/SystemZ.def"
