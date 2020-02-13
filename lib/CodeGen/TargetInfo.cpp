@@ -9681,6 +9681,15 @@ public:
     Fn->addFnAttr("interrupt", Kind);
   }
 };
+class UPTABIInfo : public DefaultABIInfo {
+public:
+  UPTABIInfo(CodeGen::CodeGenTypes &CGT) : DefaultABIInfo(CGT) {}
+};
+class UPTTargetCodeGenInfo : public TargetCodeGenInfo {
+public:
+  UPTTargetCodeGenInfo(CodeGenTypes &CGT)
+      : TargetCodeGenInfo(new UPTABIInfo(CGT)) {}
+};
 } // namespace
 
 //===----------------------------------------------------------------------===//
@@ -9869,6 +9878,8 @@ const TargetCodeGenInfo &CodeGenModule::getTargetCodeGenInfo() {
   case llvm::Triple::spir:
   case llvm::Triple::spir64:
     return SetCGInfo(new SPIRTargetCodeGenInfo(Types));
+  case llvm::Triple::upt:
+    return SetCGInfo(new UPTTargetCodeGenInfo(Types));
   }
 }
 

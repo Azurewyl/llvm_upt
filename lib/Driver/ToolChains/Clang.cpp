@@ -44,6 +44,7 @@
 
 #ifdef LLVM_ON_UNIX
 #include <unistd.h> // For getuid().
+#include <llvm/ADT/Triple.h>
 #endif
 
 using namespace clang::driver;
@@ -1401,7 +1402,6 @@ void Clang::RenderTargetOptions(const llvm::Triple &EffectiveTriple,
   case llvm::Triple::riscv64:
     AddRISCVTargetArgs(Args, CmdArgs);
     break;
-
   case llvm::Triple::sparc:
   case llvm::Triple::sparcel:
   case llvm::Triple::sparcv9:
@@ -1783,7 +1783,6 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
   CmdArgs.push_back("-target-abi");
   CmdArgs.push_back(ABIName.data());
 }
-
 void Clang::AddSparcTargetArgs(const ArgList &Args,
                                ArgStringList &CmdArgs) const {
   sparc::FloatABI FloatABI =
