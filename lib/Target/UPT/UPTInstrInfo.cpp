@@ -173,9 +173,6 @@ void UPTInstrInfo::copyPhysReg(MachineBasicBlock &MBB,
                                unsigned DestReg,
                                unsigned SrcReg,
                                bool KillSrc) const {
-  //  BuildMI(MBB, I, I->getDebugLoc(), get(UPT::MOVrr), DestReg)
-  //      .addReg(SrcReg, getKillRegState(KillSrc));
-  // replace Movrr with add dst ,src,zero
   unsigned Opc = 0, ZeroReg = 0;
   Opc = UPT::ADDR, ZeroReg = UPT::ZERO;
 
@@ -228,33 +225,23 @@ bool UPTInstrInfo::expandPostRAPseudo(MachineInstr &MI) const {
         .addReg(DstReg, RegState::Define | getDeadRegState(DstIsDead))
         .addReg(DstReg);
 
-    if (MO.isImm()) {
-      const unsigned Imm = MO.getImm();
-      const unsigned Lo16 = Imm & 0xffff;
-      const unsigned Hi16 = (Imm >> 16) & 0xffff;
-      LO16 = LO16.addImm(Lo16);
-      HI16 = HI16.addImm(Hi16);
-    } else {
-      const GlobalValue *GV = MO.getGlobal();
-      const unsigned TF = MO.getTargetFlags();
-      LO16 = LO16.addGlobalAddress(GV, MO.getOffset(), TF | UPTII::MO_LO16);
-      HI16 = HI16.addGlobalAddress(GV, MO.getOffset(), TF | UPTII::MO_HI16);
-    }
-
+    const GlobalValue *GV = MO.getGlobal();
+    const unsigned TF = MO.getTargetFlags();
+    LO16 = LO16.addGlobalAddress(GV, MO.getOffset(), TF | UPTII::MO_LO16);
+    HI16 = HI16.addGlobalAddress(GV, MO.getOffset(), TF | UPTII::MO_HI16);
     MBB.erase(MI);
     return true;
   }
   }
 }
 bool UPTInstrInfo::isAsCheapAsAMove(const MachineInstr &MI) const {
-  const unsigned Opcode = MI.getOpcode();
-  switch (Opcode) {
-  default:break;
-  case UPT::ADDI:
-  case UPT::ORI:
-  case UPT::XORI:
-    return (MI.getOperand(1).isReg() && MI.getOperand(1).getReg() == UPT::ZERO);
-  }
+//  const unsigned Opcode = MI.getOpcode();
+//  switch (Opcode) {
+//  default:break;
+//  case UPT::ADDI:
+//  case UPT::ORI:
+//  case UPT::XORI:
+//    return (MI.getOperand(1).isReg() && MI.getOperand(1).getReg() == UPT::ZERO);
 
   return MI.isAsCheapAsAMove();
 }

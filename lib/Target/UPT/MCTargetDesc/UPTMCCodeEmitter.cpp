@@ -98,34 +98,34 @@ unsigned UPTMCCodeEmitter::getMachineOpValue(const MCInst &MI,
     return static_cast<unsigned>(MO.getImm());
   }
 
-  assert(MO.isExpr() && "unknown operand kind in printOperand");
-
-  const MCExpr *Expr = MO.getExpr();
-  MCExpr::ExprKind Kind = Expr->getKind();
-
-  if (Kind == MCExpr::Binary) {
-    Expr = static_cast<const MCBinaryExpr*>(Expr)->getLHS();
-    Kind = Expr->getKind();
-  }
-
-  assert (Kind == MCExpr::SymbolRef);
-
-  unsigned FixupKind;
-  switch (cast<MCSymbolRefExpr>(Expr)->getKind()) {
-  default:
-    llvm_unreachable("Unknown fixup kind!");
-  case MCSymbolRefExpr::VK_UPT_LO: {
-    FixupKind = UPT::fixup_upt_mov_lo16_pcrel;
-    break;
-  }
-  case MCSymbolRefExpr::VK_UPT_HI: {
-    FixupKind = UPT::fixup_upt_mov_hi16_pcrel;
-    break;
-  }
-  }
-
-  Fixups.push_back(MCFixup::create(0, MO.getExpr(), MCFixupKind(FixupKind)));
-  return 0;
+//  assert(MO.isExpr() && "unknown operand kind in printOperand");
+//
+//  const MCExpr *Expr = MO.getExpr();
+//  MCExpr::ExprKind Kind = Expr->getKind();
+//
+//  if (Kind == MCExpr::Binary) {
+//    Expr = static_cast<const MCBinaryExpr*>(Expr)->getLHS();
+//    Kind = Expr->getKind();
+//  }
+//
+//  assert (Kind == MCExpr::SymbolRef);
+//
+//  unsigned FixupKind;
+//  switch (cast<MCSymbolRefExpr>(Expr)->getKind()) {
+//  default:
+//    llvm_unreachable("Unknown fixup kind!");
+//  case MCSymbolRefExpr::VK_UPT_LO: {
+//    FixupKind = UPT::fixup_upt_mov_lo16_pcrel;
+//    break;
+//  }
+//  case MCSymbolRefExpr::VK_UPT_HI: {
+//    FixupKind = UPT::fixup_upt_mov_hi16_pcrel;
+//    break;
+//  }
+//  }
+//
+//  Fixups.push_back(MCFixup::create(0, MO.getExpr(), MCFixupKind(FixupKind)));
+//  return 0;
 }
 
 unsigned UPTMCCodeEmitter::getMemSrcValue(const MCInst &MI, unsigned OpIdx,

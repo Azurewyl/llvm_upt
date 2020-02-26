@@ -52,7 +52,7 @@ UPTTargetLowering::UPTTargetLowering(UPTTargetMachine &UPTTM)
     : TargetLowering(UPTTM), Subtarget(*UPTTM.getSubtargetImpl()) {
   LLVM_DEBUG(dbgs() << ">>UPT TargetLowering::constructor <<\n");
   // Set up the register classes.
-  addRegisterClass(MVT::i32, &UPT::GRRegsRegClass);
+  addRegisterClass(MVT::i32, &UPT::GPRRegClass);
   // Compute derived properties from the register classes
   computeRegisterProperties(Subtarget.getRegisterInfo());
   setStackPointerRegisterToSaveRestore(UPT::SP);
@@ -313,7 +313,7 @@ SDValue UPTTargetLowering::LowerFormalArguments(SDValue Chain,
 //                   << RegVT.getSimpleVT().SimpleTy << "\n";);
       assert(RegVT.getSimpleVT().SimpleTy == MVT::i32 &&
           "Only support MVT::i32 register passing");
-      const unsigned VReg = RegInfo.createVirtualRegister(&UPT::GRRegsRegClass);
+      const unsigned VReg = RegInfo.createVirtualRegister(&UPT::GPRRegClass);
       RegInfo.addLiveIn(VA.getLocReg(), VReg);
       SDValue ArgIn = DAG.getCopyFromReg(Chain, dl, VReg, RegVT);
 

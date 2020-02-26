@@ -13,9 +13,9 @@
 
 class MulDivInst<bits<6> op, string asmstr, SDNode OpNode>:
     UPTInstFormReg3<op,
-    (outs GRRegs:$rd), (ins GRRegs:$rs, GRRegs:$rt),
+    (outs GPR:$rd), (ins GPR:$rs, GPR:$rt),
     !strconcat(asmstr, "\t$rd, $rs, $rt"),
-    [(set GRRegs:$rd, (OpNode GRRegs:$rs, GRRegs:$rt))]>{
+    [(set GPR:$rd, (OpNode GPR:$rs, GPR:$rt))]>{
   let Predicates =[HasStdExtM];
 }
 
@@ -23,13 +23,13 @@ class MulDivInst<bits<6> op, string asmstr, SDNode OpNode>:
 // Mul/Div Instructions
 //===----------------------------------------------------------------------===//
 
-def MUL     : MulDivInst<0b010101, "MUL",mul>;
-def MULH    : MulDivInst<0b010111, "MULHS",mulhs>;
-def MULHU   : MulDivInst<0b011001, "MULHU" , mulhu>;
-def DIV     : MulDivInst<0b011010, "DIV", sdiv>;
-def DIVU    : MulDivInst<0b011011, "DIVU",udiv>;
-def REM     : MulDivInst<0b011100, "REM",srem>;
-def REMU    : MulDivInst<0b011101, "REMU",urem>;
+def MUL     : MulDivInst<0x30, "MUL",mul>;
+def MULH    : MulDivInst<0x31, "MULHS",mulhs>;
+def MULHU   : MulDivInst<0x32, "MULHU" , mulhu>;
+def DIV     : MulDivInst<0x33, "DIV", sdiv>;
+def DIVU    : MulDivInst<0x34, "DIVU",udiv>;
+def REM     : MulDivInst<0x35, "REM",srem>;
+def REMU    : MulDivInst<0x36, "REMU",urem>;
 
 
 

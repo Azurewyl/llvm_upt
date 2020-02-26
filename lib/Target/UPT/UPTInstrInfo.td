@@ -20,14 +20,14 @@ include "UPTOperators.td"
 
 multiclass LogicInst<bits<6> op/*b位操作码*/, string asmstr/*指令汇编名*/, SDNode OpNode/* DAG节点*/>{
   def R : UPTInstFormReg3<op,  // 操作码
-                      (outs GRRegs:$rd), (ins GRRegs:$rs, GRRegs:$rt), // 输入输出类型和个数
+                      (outs GPR:$rd), (ins GPR:$rs, GPR:$rt), // 输入输出类型和个数
                       !strconcat(asmstr, "R $rd, $rs, $rt"),   //汇编输出完整形式
-                      [(set GRRegs:$rd, (OpNode GRRegs:$rs, GRRegs:$rt))]>;  // 匹配模式
+                      [(set GPR:$rd, (OpNode GPR:$rs, GPR:$rt))]>;  // 匹配模式
 
   def I : UPTInstFormReg2I<{op{5}, op{4}, op{3}, op{2}, op{1}, 1},
-                      (outs GRRegs:$rd), (ins GRRegs:$rs, i32imm:$imm),
+                      (outs GPR:$rd), (ins GPR:$rs, i32imm:$imm),
                       !strconcat(asmstr, "I $rd, $rs, $imm"),
-                      [(set GRRegs:$rd, (OpNode GRRegs:$rs, immZExt16:$imm))]>;
+                      [(set GPR:$rd, (OpNode GPR:$rs, immZExt16:$imm))]>;
 }
 
 //5bit imm zext to 32bit
@@ -37,13 +37,13 @@ multiclass LogicInst<bits<6> op/*b位操作码*/, string asmstr/*指令汇编名
 
 multiclass ShiftInst<bits<6> op, string asmstr, SDNode OpNode>{
   def R : UPTInstFormReg3<op,
-                      (outs GRRegs:$rd), (ins GRRegs:$rs, GRRegs:$rt),
+                      (outs GPR:$rd), (ins GPR:$rs, GPR:$rt),
                       !strconcat(asmstr, "R $rd, $rs, $rt"),
-                      [(set GRRegs:$rd, (OpNode GRRegs:$rs, GRRegs:$rt))]>;
+                      [(set GPR:$rd, (OpNode GPR:$rs, GPR:$rt))]>;
   def I : UPTInstFormReg2I<{op{5}, op{4}, op{3}, op{2}, op{1}, 1},
-                      (outs GRRegs:$rd), (ins GRRegs:$rs, i32imm:$imm),
+                      (outs GPR:$rd), (ins GPR:$rs, i32imm:$imm),
                       !strconcat(asmstr, "I $rd, $rs, $imm"),
-                      [(set GRRegs:$rd, (OpNode GRRegs:$rs, immZExt5:$imm))]>;
+                      [(set GPR:$rd, (OpNode GPR:$rs, immZExt5:$imm))]>;
 }
 
 //16bit imm zext to 32bit
@@ -52,69 +52,78 @@ multiclass ShiftInst<bits<6> op, string asmstr, SDNode OpNode>{
 //===----------------------------------------------------------------------===//
 multiclass ArithInst<bits<6> op/*b位操作码*/, string asmstr/*指令汇编名*/, SDNode OpNode/* DAG节点*/>{
   def R : UPTInstFormReg3<op,  // 操作码
-                      (outs GRRegs:$rd), (ins GRRegs:$rs, GRRegs:$rt), // 输入输出类型和个数
+                      (outs GPR:$rd), (ins GPR:$rs, GPR:$rt), // 输入输出类型和个数
                       !strconcat(asmstr, "R $rd, $rs, $rt"),   //汇编输出完整形式
-                      [(set GRRegs:$rd, (OpNode GRRegs:$rs, GRRegs:$rt))]>; // 匹配模式
+                      [(set GPR:$rd, (OpNode GPR:$rs, GPR:$rt))]>; // 匹配模式
   def I : UPTInstFormReg2I<{op{5}, op{4}, op{3}, op{2}, op{1}, 1},
-                      (outs GRRegs:$rd), (ins GRRegs:$rs, i32imm:$imm),
+                      (outs GPR:$rd), (ins GPR:$rs, i32imm:$imm),
                       !strconcat(asmstr, "I $rd, $rs, $imm"),
-                      [(set GRRegs:$rd, (OpNode GRRegs:$rs, immZExt16:$imm))]>;
+                      [(set GPR:$rd, (OpNode GPR:$rs, immSExt16:$imm))]>;
 }
 
 
 
-defm AND : LogicInst<0b000000, "AND", and>;
-defm OR  : LogicInst<0b000010, "OR", or>;
-defm XOR : LogicInst<0b000100, "XOR", xor>;
-defm ADD : ArithInst<0b000110, "ADD", add>;
-defm SUB : ArithInst<0b001000, "SUB", sub>;
-defm SRL : ShiftInst<0b001010, "SRL", srl>;
-defm SLL : ShiftInst<0b001100, "SLL", shl>;
-defm SRA : ShiftInst<0b001110, "SRA", sra>;
-
-//===----------------------------------------------------------------------===//
-// Comparison Instructions
-//===----------------------------------------------------------------------===//
-
-def CMP : UPTInstFormReg2<0b010000, (outs), (ins GRRegs:$rd, GRRegs:$rs),
-    !strconcat("CMP"," $rd, $rs"), []>{
-  let Defs = [SR];
-}
+defm AND : LogicInst<0x00, "AND", and>;
+defm OR  : LogicInst<0x02, "OR",  or>;
+defm XOR : LogicInst<0x04, "XOR", xor>;
+defm ADD : ArithInst<0x06, "ADD", add>;
+defm SUB : ArithInst<0x08, "SUB", sub>;
+defm SRL : ShiftInst<0x0A, "SRL", srl>;
+defm SLL : ShiftInst<0x0C, "SLL", shl>;
+defm SRA : ShiftInst<0x0D, "SRA", sra>;
 
 //===----------------------------------------------------------------------===//
 // Load/Store Instructions
 //===----------------------------------------------------------------------===//
 
-def LDR : UPTInstFormReg1I<0b010110, (outs GRRegs:$rd), (ins memsrc:$imm),
-  !strconcat("LDR", " $rd, $imm"),[(set GRRegs:$rd, (load addr:$imm))]>{
+
+
+def LDR : UPTInstFormReg2I<0x0E, (outs GPR:$rd), (ins memsrc:$imm),
+  !strconcat("LDR", "  $rd, $imm"),[(set GPR:$rd, (load addr:$imm))]>{
 }
 
-// Store
-def STR : UPTInstFormReg1I<0b010110, (outs), (ins GRRegs:$rd, memsrc:$imm),
-  !strconcat("STR", " $rd, $imm"),[(store GRRegs:$rd, addr:$imm)]>{
+def STR : UPTInstFormReg2I<0x0F, (outs), (ins GPR:$rd, memsrc:$imm),
+  !strconcat("STR", "  $rd, $imm"),[(store GPR:$rd, addr:$imm)]>{
 }
+
 
 
 
 //===----------------------------------------------------------------------===//
 // Mov Immediate Instructions
 //===----------------------------------------------------------------------===//
-
 multiclass MovInst<bits<6> op, string asmstr> {
-  def LOi16 : UPTInstFormReg1I<op,
-                      (outs GRRegs:$rd), (ins i32imm:$imm),
+  def LOi16 : UPTInstFormReg2I<op,
+                      (outs GPR:$rd), (ins i32imm:$imm),
                       !strconcat(asmstr,"L $rd, $imm"),  /* Mov Lower Part*/
-                      [(set i32:$rd, i32imm_lo:$imm)]>;
-  def HIi16 : UPTInstFormReg1I<{op{5}, op{4}, op{3}, op{2}, op{1}, 1},
-                      (outs GRRegs:$rd), (ins GRRegs:$src1, i32imm:$imm),
+                      [(set i32:$rd, immZExt16:$imm)]>;
+  def HIi16 : UPTInstFormReg2I<{op{5}, op{4}, op{3}, op{2}, op{1}, 1},
+                      (outs GPR:$rd), (ins GPR:$src1, i32imm:$imm),
                       !strconcat(asmstr,"U $rd, $imm"),  /* Mov Upper Part*/
                       [/* No pattern */]>;
 }
+defm MOV : MovInst<0x10,"MOV">;
+def MOVi32 : UPTPseudo<(outs GPR:$rd), (ins i32imm:$imm), "",[(set i32:$rd, (movei32 imm:$imm))]> {}
+
+//// Transformation function: get the low 16 bits.
+//def LO16 : SDNodeXForm<imm, [{return getI32Imm(N->getZExtValue(), SDLoc(N));}]>;
+//// Transformation function: shift the immediate value down into the low bits.
+//def HI16 : SDNodeXForm<imm, [{return getI32Imm(N->getZExtValue() >> 16, SDLoc(N));
 
 
-def MOVi32 : UPTPseudo<(outs GRRegs:$rd), (ins i32imm:$imm), "",[(set i32:$rd, (movei32 imm:$imm))]> {}
-def : Pattern<(i32 (load_sym tglobaladdr:$addr)),  [(MOVi32 $addr)]>;
-defm MOV : MovInst<0b011000,"MOV">;
+// Small immediates
+def : Pat<(i32 immSExt16:$imm),(ADDI ZERO, imm:$imm)>;
+def : Pat<(i32 immZExt16:$imm),(ORI  ZERO, imm:$imm)>;
+
+// Arbitrary immediates
+//def : Pat<(i32 imm:$imm),(ORI (ORI ZERO, (HI16 imm:$imm)), (LO16 imm:$imm))>;
+def : Pat<(i32 imm:$imm),(MOVi32 $imm)>;
+
+def : InstAlias<"MOV  $rd,$rs",   (ADDR GPR:$rd, GPR:$rs, ZERO)>;
+def : InstAlias<"MOV  $rd,$rs",   (ADDR GPR:$rd, ZERO, GPR:$rs)>;
+def : InstAlias<"MOV  $rd,$imm",  (ADDI GPR:$rd, ZERO, i32imm:$imm)>;
+def : InstAlias<"MOV  $rd,$imm",  (ORI  GPR:$rd, ZERO, i32imm:$imm)>;
+
 
 //===----------------------------------------------------------------------===//
 // Return and Call Instructions
@@ -122,21 +131,32 @@ defm MOV : MovInst<0b011000,"MOV">;
 
 
 let isCall=1, Defs=[RA],Uses=[SP] in {
-  def CALL: UPTInstFormReg1<0b011011,(outs), (ins GRRegs:$rd),
+  def CALL: UPTInstFormReg1<0x12,(outs), (ins GPR:$rd),
           "CALL $rd", [(upt_call i32:$rd)]> {}
 }
+def : Pat<(i32 (load_sym tglobaladdr:$addr)),  (MOVi32 $addr)>;
 
-let isBranch=1 ,isTerminator=1, isBarrier=1, isReturn=1, Uses= [RA] in {
-  def RET:UPTInstFormReg1<0b011010, (outs), (ins variable_ops),"RET RA", [(UPTRetFlag)]> {
+let isBranch=1 ,isTerminator=1, isReturn=1, Uses= [RA] in {
+  def RET:UPTInstFormReg1<0x13, (outs), (ins variable_ops),"RET", [(UPTRetFlag)]> {
     let Inst{25-21}= 0xF;
   }
 }
+
+//===----------------------------------------------------------------------===//
+// Comparison Instructions
+//===----------------------------------------------------------------------===//
+
+def CMP : UPTInstFormReg2<0x14, (outs), (ins GPR:$rd, GPR:$rs),
+  !strconcat("CMP","  $rd, $rs"), []>{
+  let Defs = [SR];
+}
+
 //===----------------------------------------------------------------------===//
 // Branch Instructions
 //===----------------------------------------------------------------------===//
 
-let isBranch=1,isBarrier=1,isTerminator=1 in {
-  def JMP : UPTInstFormReg0<0b010010, (outs), (ins b_target:$addr),
+let isBranch=1, isTerminator=1 in {
+  def JMP : UPTInstFormReg0<0x20, (outs), (ins b_target:$addr),
           "JMP $addr", [(br bb:$addr)]> {}
 }
 
@@ -153,60 +173,16 @@ let Defs = [SP], Uses = [SP] in {
 
 
 
-def Bcc : UPTInstFormReg0<0b100000, (outs), (ins cc_val:$cc, b_target:$addr),
+def Bcc : UPTInstFormReg0<0x21, (outs), (ins cc_val:$cc, b_target:$addr),
     "B$cc $addr", []> {
+  bits<6> cc_val;
+  let Opcode= cc_val;
   let Uses = [SR];
   let isBranch=1;
   let isTerminator=1;
 }
 
-//let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
-//class BranchCC_rri<op, string asmstr>
-//    : UPTInstFormReg2I<op,
-//              (outs GRRegs:$rd), (ins GRRegs:$rs, i32imm:$imm),
-//              !strconcat(asmstr, "$rd, $rs, $imm"),
-//              [(set GRRegs:$rd, (OpNode GRRegs:$rs, immZExt16:$imm))]>; {
-//  let isBranch = 1;
-//  let isTerminator = 1;
-//}
-//
-//def BEQ  : BranchCC_rri<0b101110, "beq">;
-//def BNE  : BranchCC_rri<0b100001, "bne">;
-//def BLT  : BranchCC_rri<0b100000, "blt">;
-//def BGE  : BranchCC_rri<0b100101, "bge">;
-//def BLTU : BranchCC_rri<0b100110, "bltu">;
-//def BGEU : BranchCC_rri<0b100111, "bgeu">;
-//
-///// Branches and jumps
-//
-//// Match `(brcond (CondOp ..), ..)` and lower to the appropriate RISC-V branch
-//// instruction.
-//class BccPat<PatFrag CondOp, RVInstB Inst>
-//    : Pat<(brcond (XLenVT (CondOp GPR:$rs1, GPR:$rs2)), bb:$imm12),
-//          (Inst GPR:$rs1, GPR:$rs2, simm13_lsb0:$imm12)>;
-//
-//def : BccPat<seteq, BEQ>;
-//def : BccPat<setne, BNE>;
-//def : BccPat<setlt, BLT>;
-//def : BccPat<setge, BGE>;
-//def : BccPat<setult, BLTU>;
-//def : BccPat<setuge, BGEU>;
-//
-//class BccSwapPat<PatFrag CondOp, RVInst InstBcc>
-//    : Pat<(brcond (XLenVT (CondOp GPR:$rs1, GPR:$rs2)), bb:$imm12),
-//          (InstBcc GPR:$rs2, GPR:$rs1, bb:$imm12)>;
-//
-//// Condition codes that don't have matching RISC-V branch instructions, but
-//// are trivially supported by swapping the two input operands
-//def : BccSwapPat<setgt, BLT>;
-//def : BccSwapPat<setle, BGE>;
-//def : BccSwapPat<setugt, BLTU>;
-//def : BccSwapPat<setule, BGEU>;
-//
-//// An extra pattern is needed for a brcond without a setcc (i.e. where the
-//// condition was calculated elsewhere).
-//def : Pat<(brcond GPR:$cond, bb:$imm12), (BNE GPR:$cond, X0, bb:$imm12)>;
-//
+
 
 //===----------------------------------------------------------------------===//
 // Standard extensions

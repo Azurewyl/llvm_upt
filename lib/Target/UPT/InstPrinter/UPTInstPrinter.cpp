@@ -13,6 +13,7 @@
 
 
 #include "UPTInstPrinter.h"
+#include "MCTargetDesc/UPTMCTargetDesc.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/CodeGen/ISDOpcodes.h"
 #include "llvm/MC/MCExpr.h"
@@ -24,7 +25,10 @@
 using namespace llvm;
 
 #define DEBUG_TYPE "asm-printer:to .s file"
+// Include the auto-generated portion of the assembly writer.
+#define PRINT_ALIAS_INSTR
 #include "UPTGenAsmWriter.inc"
+
 
 void UPTInstPrinter::printRegName(raw_ostream &OS, unsigned RegNo) const {
   OS << StringRef(getRegisterName(RegNo));
@@ -32,7 +36,8 @@ void UPTInstPrinter::printRegName(raw_ostream &OS, unsigned RegNo) const {
 
 void UPTInstPrinter::printInst(const MCInst *MI, raw_ostream &O,
                                StringRef Annot, const MCSubtargetInfo &STI) {
-  printInstruction(MI, O);
+  if (!printAliasInstr(MI, O))
+     printInstruction(MI, O);
   printAnnotation(O, Annot);
 }
 

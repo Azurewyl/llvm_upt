@@ -41,7 +41,7 @@ using namespace llvm;
 /// frame pointer register. For most targets this is true only if the function
 /// has variable sized allocas or if frame pointer elimination is disabled.
 bool UPTFrameLowering::hasFP(const MachineFunction &MF) const {
-  return true;
+  return false;
 }
 
 // Fix stacksize if has alignment
@@ -101,12 +101,15 @@ void UPTFrameLowering::emitPrologue(MachineFunction &MF,
                                     MachineBasicBlock &MBB) const {
   LLVM_DEBUG(dbgs() << ">> FrameLowering::emitPrologue <<\n");
 
-  // Compute the stack size, to determine if we need a prologue at all.
+  MachineFrameInfo MFI = MF.getFrameInfo();
   const TargetInstrInfo &TII = *MF.getSubtarget().getInstrInfo();
+  const std::vector<CalleeSavedInfo> &CSI = MFI.getCalleeSavedInfo();
+  const MCRegisterInfo *MRI = MF.getMMI().getContext().getRegisterInfo();
   MachineBasicBlock::iterator MBBI = MBB.begin();
   DebugLoc dl = MBBI != MBB.end() ? MBBI->getDebugLoc() : DebugLoc();
 
 #ifdef STACK_DYNAMIC
+  // Compute the stack size, to determine if we need a prologue at all.
   uint64_t StackSize = computeStackSize(MF);
   if (!StackSize) {
     return;
@@ -125,6 +128,24 @@ void UPTFrameLowering::emitPrologue(MachineFunction &MF,
         .addImm(StackSize)
         .setMIFlag(MachineInstr::FrameSetup);
   }
+
+  if (CSI.size()) {
+    // Find the instruction past the last instruction that saves a callee-saved
+    // register to the stack.
+    for (unsigned i = 0; i < CSI.size(); ++i)
+      ++MBBI;
+    // Iterate over list of callee-saved registers
+    for (std::vector<CalleeSavedInfo>::const_iterator I = CSI.begin(),
+             E = CSI.end(); I != E; ++I) {
+      int64_t Offset = MFI.getObjectOffset(I->getFrameIdx());
+      unsigned CFIIndex = MF.addFrameInst(MCCFIInstruction::createOffset(
+          nullptr, MRI->getDwarfRegNum(I->getReg(), 1), Offset));
+      BuildMI(MBB, MBBI, dl, TII.get(TargetOpcode::CFI_INSTRUCTION))
+          .addCFIIndex(CFIIndex);
+    }
+  }
+
+
 #else
   // allocate fixed size for simplicity
   uint64_t StackSize = 4 * 16;
@@ -177,5 +198,4 @@ MachineBasicBlock::iterator UPTFrameLowering::eliminateCallFramePseudoInstr(
       I->getOpcode() == UPT::ADJCALLSTACKDOWN) {
     return MBB.erase(I);
   }
-
 }

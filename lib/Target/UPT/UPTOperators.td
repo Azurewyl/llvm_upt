@@ -57,7 +57,7 @@ def UPTRetFlag    : SDNode<"UPTISD::RET_FLAG", SDTNone,
 def load_sym : SDNode<"UPTISD::LOAD_SYM", SDTIntUnaryOp>;
 
 def movei32 : SDNode<"UPTISD::MOVEi32",
-                       SDTypeProfile<1, 1, [SDTCisSameAs<0, 1>, SDTCisInt<0>]>>;
+                     SDTypeProfile<1, 1, [SDTCisSameAs<0, 1>, SDTCisInt<0>]>>;
 
 
 
@@ -74,18 +74,26 @@ def cc_val : Operand<i32> {
 }
 
 def memsrc : Operand<i32> {
-  let MIOperandInfo = (ops GRRegs, i32imm);
+  let MIOperandInfo = (ops GPR, i32imm);
   let PrintMethod = "printAddrModeMemSrc";
   let EncoderMethod = "getMemSrcValue";
 }
 
-def i32imm_lo : Operand<i32>, ImmLeaf<i32, [{
-  return Imm >= 0 && Imm < 65536;
-}]>;
 
 def UPTimm8 : Operand<i32>, ImmLeaf<i32, [{
   return Imm >= 0 && Imm < 256;
 }]>;
+
+//===----------------------------------------------------------------------===//
+// Pattern about imm
+//===----------------------------------------------------------------------===//
+
+// Signed extend 16bit
+def immSExt16  : PatLeaf<(imm), [{ return isInt<16>(N->getSExtValue()); }]>;
+// Zero extend Inst[4:0] or Inst[15:0] to 32bit
+def immZExt5  : PatLeaf<(imm), [{ return isUInt<5>(N->getZExtValue()); }]>;
+def immZExt16  : PatLeaf<(imm), [{ return isUInt<16>(N->getZExtValue()); }]>;
+
 
 //===----------------------------------------------------------------------===//
 // Complex Pattern Definitions.
@@ -93,10 +101,5 @@ def UPTimm8 : Operand<i32>, ImmLeaf<i32, [{
 
 def addr : ComplexPattern<iPTR, 2, "SelectAddr", [], []>;
 
-// Signed extend 16bit
-def immSExt16  : PatLeaf<(imm), [{ return isInt<16>(N->getSExtValue()); }]>;
-// Zero extend Inst[4:0] or Inst[15:0] to 32bit
-def immZExt5  : PatLeaf<(imm), [{ return isUInt<5>(N->getZExtValue()); }]>;
-def immZExt16  : PatLeaf<(imm), [{ return isUInt<16>(N->getZExtValue()); }]>;
 
 
