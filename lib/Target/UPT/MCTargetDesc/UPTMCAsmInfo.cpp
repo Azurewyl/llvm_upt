@@ -14,11 +14,6 @@ void UPTMCAsmInfo::anchor() {}
 
 /// used to configure asm printer.
 UPTMCAsmInfo::UPTMCAsmInfo(const Triple &TT) {
-  /// debug
-  SupportsDebugInformation = true;
-  /// Exception handling format for the target
-  ExceptionsType = ExceptionHandling::DwarfCFI;
-
   /// These directives are used to output some unit of integer data to the current section
   Data8bitsDirective = "\t.byte\t";
   Data16bitsDirective = "\t.short\t";
@@ -34,7 +29,7 @@ UPTMCAsmInfo::UPTMCAsmInfo(const Triple &TT) {
   StackGrowsUp = false;
   /// The '$' token refers to the current PC when not referencing an identifier
   DollarIsPC = false;
-  LabelSuffix =";";
+  LabelSuffix =":";
 
 }
 

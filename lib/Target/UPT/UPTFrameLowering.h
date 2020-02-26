@@ -23,7 +23,7 @@ class UPTSubtarget;
 class UPTFrameLowering : public TargetFrameLowering {
 public:
   explicit UPTFrameLowering(const UPTSubtarget &STI)
-      : TargetFrameLowering(StackGrowsDown,
+      : TargetFrameLowering(/*StackDirection*/StackGrowsDown,
       /*StackAlignment=*/Align(4),
       /*LocalAreaOffset=*/0),
         STI(STI) {}

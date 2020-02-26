@@ -41,10 +41,10 @@ def SR   : UPTReg< 16, "SR">,   DwarfRegNum<[16]>;
 //class RegisterClass<string namespace, list<ValueType> regTypes, int alignment,
 //                    dag regList, RegAltNameIndex idx = NoRegAltName>
 // Also define the default allocation order ofregisters
-def GRRegs : RegisterClass<"UPT", [i32], 32, (add
+def GPR : RegisterClass<"UPT", [i32], 32, (add
   // (Return values and Arguments registers)
   V0, A0, A1, A2, A3,
-  //  (Not preserved across procedure calls)
+  //  (Caller saved registers)
   T0, T1, T2, T3,
   //  (Callee saved registers)
   S0, S1, S2, S3,
