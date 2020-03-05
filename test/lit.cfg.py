@@ -27,7 +27,7 @@ config.suffixes = ['.ll', '.c', '.cxx', '.test', '.txt', '.s', '.mir']
 # excludes: A list of directories to exclude from the testsuite. The 'Inputs'
 # subdirectories contain auxiliary inputs for various tests in their parent
 # directories.
-config.excludes = ['Inputs', 'CMakeLists.txt', 'README.txt', 'LICENSE.txt']
+config.excludes = ['Inputs', 'CMakeLists.txt', 'README.md', 'LICENSE.txt']
 
 # test_source_root: The root path where tests are located.
 config.test_source_root = os.path.dirname(__file__)
