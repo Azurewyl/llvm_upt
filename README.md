@@ -23,10 +23,19 @@ This is a simple example LLVM backend for an UPT architecture - An self define C
 
 ## Build and Usage
 todo
+![](resources/UPT_assets/LLVM_tools_around_IR.png)
 ## Instruction Set Architecture
-todo
+![](resources/UPT_assets/UPT_instr_format.png)
 ## Target-independent Code Generator
 todo
+
+![](resources/UPT_assets/TableGen.png)
+![](resources/UPT_assets/Instruction_Selection_Phases.png)
+![](resources/UPT_assets/scheduler_hierarchy.png)
+![](resources/UPT_assets/MC-Layer.png)
+
+### Summary
+![](resources/UPT_assets/Code-generator-summary.png)
 ## Implementation detail
 todo
 ## Regression Test
@@ -35,7 +44,7 @@ todo
 
 # Materials
 
-**I will update some practical videos and documentation for the development of the compiler backend.I think these materials are most useful during my study.**
+**I will update some practical videos and documentation for the development of the compiler backend**
 
 **Except for those related to code generation algorithms such as instruction selection and register allocation,there are few papers involved here,  as most of them are not practical**
 
@@ -94,7 +103,7 @@ https://github.com/FrozenGene/presentation/blob/master/pdf/LLVM.pdf
 
 https://www.cs.cmu.edu/afs/cs/academic/class/15745-s11/public/lectures/
 
-
+https://lagunita.stanford.edu/login?next=/courses/Engineering/Compilers/Fall2014/course
 
 ## Instruction Selection
 
@@ -187,9 +196,6 @@ http://llvm.org/docs/TestingGuide.html
 https://llvm.org/docs/CommandGuide/FileCheck.html
 
 
-
-
-
 ## Other Backends
 
 [2018 LLVM Developers’ Meeting: A. Bradbury “LLVM backend development by example (RISC-V)”](https://www.youtube.com/watch?v=AFaIP-dF-RA&t=2217s)
@@ -200,11 +206,8 @@ https://reup.dmcs.pl/wiki/images/7/7a/Tricore-llvm-slides.pdf
 
 [llvm riscv backend commit patches ](https://github.com/lowRISC/riscv-llvm)
 
+[Leon llvm backend](https://indico.esa.int/event/146/contributions/848/attachments/938/1125/09_-_LLVM_compiler_...pdf)
 Goldberg C J. The Design of a Custom 32-bit RISC CPU and LLVM Compiler Backend[J], 2017.
-
-Adding microMIPS backend to the LLVM compiler infrastructure[C]//2013 21st Telecommunications Forum Telfor (TELFOR). IEEE, 2013: 
-
-ErLLVM: an LLVM backend for Erlang[C]//Proceedings of the eleventh ACM SIGPLAN workshop on Erlang workshop. 2012
 
 ## Other articals
 
@@ -221,4 +224,5 @@ http://user.it.uu.se/~kostis/Teaching/KT1-11/Slides/handout13.pdf
 http://jonathan2251.github.io/lbd/funccall.html#dynamic-stack-allocation-support
 
 [variable-sized-objects-on-the-stack](https://stackoverflow.com/questions/36562685/variable-sized-objects-on-the-stack)
+
 
