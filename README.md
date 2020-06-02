@@ -24,6 +24,9 @@ This is a simple example LLVM backend for an UPT architecture - An self define C
 ## Build and Usage
 todo
 ![](resources/UPT_assets/LLVM_tools_around_IR.png)
+
+[LLVM运行测试说明文档](file:://./docs/UPT_FUN/LLVM运行测试文档.pdf)
+
 ## Instruction Set Architecture
 ![](resources/UPT_assets/UPT_instr_format.png)
 ## Target-independent Code Generator
@@ -31,8 +34,6 @@ todo
 
 ![](resources/UPT_assets/TableGen.png)
 ![](resources/UPT_assets/Instruction_Selection_Phases.png)
-![](resources/UPT_assets/scheduler_hierarchy.png)
-![](resources/UPT_assets/MC-Layer.png)
 
 ### Summary
 ![](resources/UPT_assets/Code-generator-summary.png)
